@@ -105,11 +105,11 @@
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="Go 构建.go build src" />
-      <item itemvalue="Go 构建.go build sign.go" />
       <item itemvalue="Go 构建.go build main.go" />
-      <item itemvalue="Go 构建.go build user.go" />
+      <item itemvalue="Go 构建.go build sign.go" />
+      <item itemvalue="Go 构建.go build src" />
       <item itemvalue="Go 构建.go build test.go" />
+      <item itemvalue="Go 构建.go build user.go" />
     </list>
     <recent_temporary>
       <list>
