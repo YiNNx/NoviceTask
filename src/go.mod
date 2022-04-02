@@ -3,10 +3,9 @@ module src
 go 1.18
 
 require (
-	github.com/go-pg/pg v8.0.7+incompatible
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/go-pg/pg/v10 v10.10.6
 	github.com/labstack/echo/v4 v4.7.2
-	github.com/lib/pq v1.10.4
 )
 
 require (

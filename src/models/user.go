@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/go-pg/pg/v10"
 	"github.com/go-pg/pg/v10/orm"
+	"time"
 )
 
 const (
@@ -11,52 +12,78 @@ const (
 	port     = 5432
 	user     = "postgres"
 	password = "080502"
-	dbname   = "test"
+	dbname   = "novicetask"
 )
 
 var db *pg.DB
 
 type User struct {
-	Id    int64
-	Name  string `json:"name"`
-	Email string `json:"email"`
+	tableName  struct{}  `pg:"users"`
+	Id         int       `json:"id"`
+	Email      string    `json:"email" pg:",unique,notnull"`
+	Username   string    `json:"username" pg:",unique,notnull"`
+	PwdHash    string    `json:"pwdHash"`
+	CreateTime time.Time `json:"createTime" pg:"default:now()"`
+	Role       bool      `json:"role" pg:",use_zero"` //0:default 1:admin
 }
 
-func (u User) String() string {
-	return fmt.Sprintf("User<%d %s %v>", u.Id, u.Name, u.Email)
+func (u *User) String() string {
+	return fmt.Sprintf("User<%v %v %v %v %v>", u.Id, u.Email, u.Username, u.CreateTime, u.Role)
 }
 
-func InsertUser(u *User) {
-	//u := &User{
-	//	Name:  "admin",
-	//	Email: "admin1@admin",
-	//}
+func (u *User) Insert() error {
 	_, err := db.Model(u).Insert()
 	if err != nil {
-		print("insert error")
-		panic(err)
+		return err
 	}
-	fmt.Printf("success")
+	return nil
 }
 
-func SelectName(name string) *User {
-	// Select user by primary key.
-	user := &User{Name: name}
-	err := db.Model(user).WherePK().Select()
+func CheckUser(email string, pwdHash string) (bool, error) {
+	u := new(User)
+	err := db.Model(u).
+		Where("email = ?", email).
+		Where("pwd_hash = ?", pwdHash).
+		Select()
 	if err != nil {
-		panic(err)
+		return false, err
 	}
-	return user
+	if u == nil {
+		return false, nil
+	}
+	return true, nil
 }
 
-func SelectId(id int64) *User {
-	// Select user by primary key.
+// SelectId select user by id.
+func GetUser(id int) (*User, error) {
+	u := &User{Id: id}
+	err := db.Model(u).WherePK().Select()
+	if err != nil {
+		return nil, err
+	}
+	return u, nil
+}
+
+func (u *User) Update(id int) error {
 	user := &User{Id: id}
 	err := db.Model(user).WherePK().Select()
 	if err != nil {
-		panic(err)
+		return err
 	}
-	return user
+	if len(u.Email) != 0 {
+		user.Email = u.Email
+	}
+	if len(u.Username) != 0 {
+		user.Username = u.Username
+	}
+	if len(u.PwdHash) != 0 {
+		user.PwdHash = u.PwdHash
+	}
+	_, err = db.Model(user).WherePK().Update()
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func SelectAllUser() []User {
@@ -67,6 +94,14 @@ func SelectAllUser() []User {
 		panic(err)
 	}
 	return users
+}
+
+func (u *User) Delete() error {
+	_, err := db.Model(u).WherePK().Delete()
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func Connect() *pg.DB {
@@ -103,21 +138,4 @@ func CreateSchema() error {
 		}
 	}
 	return nil
-}
-
-func Insert() {
-	user1 := &User{
-		Name:  "admin",
-		Email: "admin1@admin",
-	}
-	_, err := db.Model(user1).Insert()
-	if err != nil {
-		panic(err)
-	}
-}
-
-func main() {
-	// Output: User<1 admin [admin1@admin admin2@admin]>
-	// [User<1 admin [admin1@admin admin2@admin]> User<2 root [root1@root root2@root]>]
-	// Story<1 Cool story User<1 admin [admin1@admin admin2@admin]>>
 }

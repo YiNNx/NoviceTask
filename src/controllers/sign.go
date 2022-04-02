@@ -8,23 +8,41 @@ import (
 
 func SignUP(c echo.Context) error {
 	u := new(models.User)
+
 	if err := c.Bind(u); err != nil {
-		return c.JSON(http.StatusUnauthorized, nil)
+		return err
 	}
-	//user1 := &models.User{
-	//	Name:  "admin",
-	//	Email: "admin1@admin",
-	//}
-	models.InsertUser(u)
+	if err := u.InsertUser(); err != nil {
+		return err
+	}
+
 	return c.JSON(http.StatusOK, u)
 }
 
-// route：e.GET("/users/:id", GetUser)
-func GetUser(c echo.Context) error {
-	// 获取url上的path参数，url模式里面定义了参数:id
-	id := c.Param("id")
-	//响应一个字符串，这里直接把id以字符串的形式返回给客户端。
-	username := c.QueryParam("username") //值为："tizi365"
+func LogIn(c echo.Context) error {
+	return nil
+}
 
-	return c.String(http.StatusOK, id+" "+username)
+// route：e.GET("/user/:id", GetUser)
+func GetUser(c echo.Context) error {
+	//id, _ := strconv.Atoi(c.Param("id"))
+	//u, err := models.SelectId(id)
+	//if err != nil {
+	//	return err
+	//}
+	//
+	//return c.JSON(http.StatusOK, u)
+	return nil
+}
+
+func ChangeInfo(c echo.Context) error {
+	return nil
+}
+
+func GetAllUser(c echo.Context) error {
+	return nil
+}
+
+func DeleteUser(c echo.Context) error {
+	return nil
 }
