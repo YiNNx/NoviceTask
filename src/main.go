@@ -2,8 +2,10 @@ package main
 
 import (
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	"src/controllers"
 	"src/models"
+	"src/utils"
 )
 
 func main() {
@@ -19,12 +21,12 @@ func main() {
 
 	e.GET("/user/all", controllers.GetAllUser)
 	e.DELETE("/user/:id", controllers.DeleteUser)
-	//g := e.Group("/admin")
-	//g.Use(middleware.BasicAuth(func(jwtToken string, _ string, c echo.Context) (bool, error) {
-	//	if jwtToken == "foo" {
-	//		return true, nil
-	//	}
-	//	return false, nil
-	//}))
+
+	// Restricted group
+	r := e.Group("/test")
+
+	// Configure middleware with the custom claims type
+	r.Use(middleware.JWTWithConfig(utils.Config))
+	r.GET("/teeest", utils.Restricted)
 	e.Start(":8080")
 }

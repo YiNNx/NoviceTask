@@ -76,7 +76,8 @@
 >- [x] 架构设计
 >- [x] PostgreSQL & Go-pg
 >- [x] models接口
->- [ ] controllers控制器函数接口
+>- [x] controllers接口
+>- [ ] md5加密
 >- [ ] validator
 >- [ ] JWT
 >
