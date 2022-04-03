@@ -2,6 +2,18 @@
 
 ## API
 
+请求失败的统一返回格式为
+
+```
+{
+	"success": false,
+	"msg": "xxxxx",
+	"data": {}
+}
+```
+
+#### 无需权限的api
+
 - `POST /user`
 
   注册用户
@@ -25,17 +37,7 @@
   	}
   }
   ```
-  
-  失败：
 
-  ```
-  {
-  	"success": false,
-  	"msg": "xxxxx",
-  	"data": {}
-  }
-  ```
-  
 - `GET /token?email=xxxxx&pwd=xxxxx`
 
   成功：
@@ -49,64 +51,39 @@
   	}
   }
   ```
-  
-  失败则返回：
-  
-  ```
-  {
-  	"success": false,
-  	"msg": "xxxxx",
-  	"data": {}
-  }
-  ```
-  
+
+#### 需登录权限的api
+
+http header：
+
+```
+Authorization: Bearer xxxxxxxxxx
+```
+
+token异常返回401.
+
 - `GET /user/id`
 
-  获取用户信息（需要jwt验证）
+  获取用户信息
 
-  http header：
+  成功：
 
   ```
-  Authorization: Bearer xxxxxxxxxx
+  {
+  	"success": true,
+  	"msg": "",
+  	"data":{
+  		"id":xx
+  		"email":"xxxx",
+  		"username":"xxxx",
+  	}
+  }
   ```
 
-  - Authorization无误返回：
 
-    ```
-    {
-    	"success": true,
-    	"msg": "",
-    	"data":{
-    		"id":xx
-    		"email":"xxxx",
-    		"username":"xxxx",
-    	}
-    }
-    ```
-    
-  - 若Authorization异常：
-  
-    Status Code `401 `
-
-    ```
-    {
-    	"success": false,
-    	"msg": "",
-    	"data": {}
-    }
-    ```
-  
 - `POST /user/id`
 
-  修改用户的信息（需要jwt验证）
-
-  http header：
-
-  ```
-  Authorization: Bearer xxxxxxxxxx
-  ```
-
-  Request:
+  修改用户的信息
 
   ```
   {
@@ -115,7 +92,7 @@
   	"pwd": "xxxxx",
   }
   ```
-
+  
   成功：
 
   ```
@@ -126,29 +103,20 @@
   }
   ```
   
-  失败：
-  
-  ```
-  {
-  	"success": false,
-  	"msg": "xxxxx",
-  	"data": {}
-  }
-  ```
 
-需要admin权限的操作：
+#### 需要admin权限的操作：
 
-(如果没有权限则返回403)
+http header：
+
+```
+Authorization: Bearer xxxxxxxxxx
+```
+
+token无误 且 role为admin. token异常返回401，role不为admin返回403
 
 - `GET /user/all`
 
   查看所有用户信息
-
-  http header：
-
-  ```
-  Authorization: Bearer xxxxxxxxxx
-  ```
 
   Response:
 
@@ -187,9 +155,9 @@
   ```
   Authorization: Bearer xxxxxxxxxx
   ```
-  
+
   Response:
-  
+
   ```
   {
   	"success": true,
@@ -204,8 +172,6 @@
 >
 >   注册用户
 >
->   通过验证器后
->
 >   redirect to `/user/verify?email=`
 >
 > - `GET /user/verify?email=`
@@ -215,12 +181,12 @@
 > - `POST /user/verify?email=`
 >
 >   ```
->   {
+>  {
 >   	"token": ""
 >   }
 >   ```
->
->   Client发送token，Server确认无误则重定向至/user/verify注册成功 
+> 
+>   Client发送token，Server确认无误则重定向并注册成功 
 >
 >   redis暂存 时效与验证码相同
 
@@ -241,10 +207,6 @@
 
 ```
 
-## 密码加密
-
-md5
-
 ## JWT
 
-还在搞
+快了快了
