@@ -1,10 +1,10 @@
-package models
+package model
 
 import (
 	"fmt"
 	"github.com/go-pg/pg/v10"
 	"github.com/go-pg/pg/v10/orm"
-	"src/conf"
+	"src/config"
 	"time"
 )
 
@@ -34,42 +34,42 @@ func (u *User) Insert() error {
 }
 
 // Update user data
-func (u *User) Update(id int) (*User, error) {
-	user := &User{Id: id}
-	err := db.Model(user).WherePK().Select()
-	if err != nil {
-		return nil, err
+func Update(id int, email string, username string, pwdHash string) error {
+	if email != "" {
+		_, err := db.Model(User{}).Set("email = ?", email).Where("id = ?", id).Update()
+		if err != nil {
+			return err
+		}
 	}
-	if len(u.Email) != 0 {
-		user.Email = u.Email
+	if username != "" {
+		_, err := db.Model(User{}).Set("username = ?", username).Where("id = ?", id).Update()
+		if err != nil {
+			return err
+		}
 	}
-	if len(u.Username) != 0 {
-		user.Username = u.Username
+	if pwdHash != "" {
+		_, err := db.Model(User{}).Set("pwdHash = ?", pwdHash).Where("id = ?", id).Update()
+		if err != nil {
+			return err
+		}
 	}
-	if len(u.PwdHash) != 0 {
-		user.PwdHash = u.PwdHash
-	}
-	_, err = db.Model(user).WherePK().Update()
-	if err != nil {
-		return nil, err
-	}
-	return user, nil
+	return nil
 }
 
 // CheckUser checks email & password_hash
-func CheckUser(email string, pwdHash string) (bool, error) {
+func CheckUser(email string, pwdHash string) (*User, error) {
 	u := new(User)
 	err := db.Model(u).
 		Where("email = ?", email).
 		Where("pwd_hash = ?", pwdHash).
 		Select()
 	if err != nil {
-		return false, err
+		return nil, err
 	}
 	if u == nil {
-		return false, nil
+		return nil, nil
 	}
-	return true, nil
+	return u, nil
 }
 
 // GetUser returns user info by id.
@@ -105,9 +105,9 @@ func DeleteUser(id int) error {
 // Connect database
 func Connect() *pg.DB {
 	db = pg.Connect(&pg.Options{
-		User:     conf.User,
-		Password: conf.Password,
-		Database: conf.Dbname,
+		User:     config.User,
+		Password: config.Password,
+		Database: config.Dbname,
 	})
 
 	var n int

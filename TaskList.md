@@ -1,10 +1,20 @@
 ## level 0
 
+> - [x] rest api:get /user
+> - [x] respond改掉
+> - [x] 每个接口写一个结构体
+> - [x] gitignore
+> - [x] md5
+> - [ ] validator
+> - [ ] jwt
+> - [ ] 加group
+> - [x] update改掉
+
 - [x] [Go语法规范](http://www.gonglin91.com/2018/03/30/go-code-review-comments/)
 
 - [x] 配置使用[go mod](https://www.jianshu.com/p/760c97ff644c)进行包管理，设置[GOPROXY](https://blog.csdn.net/sinat_34241861/article/details/110232463)
 
-- [x] Echo  
+- [x] Echo
 
   [Golang echo 快速入门](https://www.tizi365.com/archives/28.html)
 
@@ -96,4 +106,3 @@
 - [ ] SQL反模式
 
 - [ ] Go Roadmap
-

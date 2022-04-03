@@ -2,7 +2,7 @@
 
 ## API
 
-- `POST /signup`
+- `POST /user`
 
   注册用户
 
@@ -10,13 +10,11 @@
   {
   	"email": "xxxx",
   	"username": "xxxx",
-  	"pwd": ""
+  	"pwd": "xxx"
   }
   ```
 
-  成功则返回：
-
-  Status Code `200`
+  成功：
 
   ```
   {
@@ -27,10 +25,8 @@
   	}
   }
   ```
-
-  失败则返回：
-
-  Status Code `401`
+  
+  失败：
 
   ```
   {
@@ -39,44 +35,31 @@
   	"data": {}
   }
   ```
+  
+- `GET /token?email=xxxxx&pwd=xxxxx`
 
-- `POST /login`
-
-  登录
+  成功：
 
   ```
   {
-  	"email":"xxxx",
-  	"pwd":"xxxx"
+  	"success": true,
+  	"msg": "",
+  	"data": {
+  		"token":"xxxxxx"
+  	}
   }
   ```
-
-  - 成功则返回：
-
-    Status Code `200`
-
-    ```
-    {
-    	"success": true,
-    	"msg": "",
-    	"data": {
-    		"token":"xxxxxx"
-    	}
-    }
-    ```
-
-    失败则返回：
-
-    Status Code `401`
-
-    ```
-    {
-    	"success": false,
-    	"msg": "xxxxx",
-    	"data": {}
-    }
-    ```
-
+  
+  失败则返回：
+  
+  ```
+  {
+  	"success": false,
+  	"msg": "xxxxx",
+  	"data": {}
+  }
+  ```
+  
 - `GET /user/id`
 
   获取用户信息（需要jwt验证）
@@ -87,9 +70,7 @@
   Authorization: Bearer xxxxxxxxxx
   ```
 
-  - Authorization无误则返回：
-
-    Status Code `200`
+  - Authorization无误返回：
 
     ```
     {
@@ -99,14 +80,12 @@
     		"id":xx
     		"email":"xxxx",
     		"username":"xxxx",
-    		"createTime": "",
-    		"role": false
     	}
     }
     ```
-
+    
   - 若Authorization异常：
-
+  
     Status Code `401 `
 
     ```
@@ -116,7 +95,7 @@
     	"data": {}
     }
     ```
-
+  
 - `POST /user/id`
 
   修改用户的信息（需要jwt验证）
@@ -137,43 +116,39 @@
   }
   ```
 
-  - 成功则返回：
+  成功：
 
-    Status Code `200`
-
-    ```
-    {
-    	"success": true,
-    	"msg": "",
-    	"data": {
-    		"id":xx
-    		"email":"xxxx",
-    		"username":"xxxx",
-    		"createTime": "",
-    		"role": false
-    	}
-    }
-    ```
-
-    失败则返回：
-
-    Status Code `401`
-
-    ```
-    {
-    	"success": false,
-    	"msg": "xxxxx",
-    	"data": {}
-    }
-    ```
+  ```
+  {
+  	"success": true,
+  	"msg": "",
+  	"data": {}
+  }
+  ```
+  
+  失败：
+  
+  ```
+  {
+  	"success": false,
+  	"msg": "xxxxx",
+  	"data": {}
+  }
+  ```
 
 需要admin权限的操作：
 
-如果没有权限则返回403
+(如果没有权限则返回403)
 
 - `GET /user/all`
 
   查看所有用户信息
+
+  http header：
+
+  ```
+  Authorization: Bearer xxxxxxxxxx
+  ```
 
   Response:
 
@@ -184,8 +159,8 @@
       "data": [
           {
               "id": 1,
-              "email": "366333@test",
-              "username": "12333",
+              "email": "xxxxxx",
+              "username": "xxxxxx",
               "pwd": "xxxxxxx",
               "createTime": "xxxxxx",
               "role": false
@@ -193,10 +168,10 @@
   		......
           {
               "id": 11,
-              "email": "666666@test.com",
-              "username": "3333",
+              "email": "xxxxxx",
+              "username": "xxxxx",
               "pwd": "xxxxxxxxx",
-              "createTime": "2022-04-02T23:19:05.739542+08:00",
+              "createTime": "xxxxxx",
               "role": false
           }
       ]
@@ -207,21 +182,25 @@
 
   删除用户
 
+  http header：
+
+  ```
+  Authorization: Bearer xxxxxxxxxx
+  ```
+  
   Response:
-
-  状态码 `204`
-
+  
   ```
   {
   	"success": true,
-  	"msg": "deleted successfully",
+  	"msg": "",
   	"data": null
   }
   ```
 
 > ### 如果有邮箱验证的话：
 >
-> - `POST /signup`
+> - `POST /user`
 >
 >   注册用户
 >
@@ -229,11 +208,11 @@
 >
 >   redirect to `/user/verify?email=`
 >
-> - `GET /signup/verify?email=`
+> - `GET /user/verify?email=`
 >
 >   Server发送验证邮件
 >
-> - `POST /signup/verify?email=`
+> - `POST /user/verify?email=`
 >
 >   ```
 >   {
@@ -243,9 +222,7 @@
 >
 >   Client发送token，Server确认无误则重定向至/user/verify注册成功 
 >
->   （暂时想到的是把数据都存在token里传给server 验证成功就存到数据库
->
->   要去问一下）
+>   redis暂存 时效与验证码相同
 
 ## 数据库
 
@@ -264,11 +241,9 @@
 
 ```
 
-
-
 ## 密码加密
 
-md5 还在搞
+md5
 
 ## JWT
 

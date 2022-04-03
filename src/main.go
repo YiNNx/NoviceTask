@@ -2,31 +2,29 @@ package main
 
 import (
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
-	"src/controllers"
-	"src/models"
-	"src/utils"
+	"src/controller"
+	"src/model"
 )
 
 func main() {
-	models.Connect()
-	defer models.Close()
+	model.Connect()
+	defer model.Close()
 
 	e := echo.New()
-	e.Debug = true
-	e.POST("/signup", controllers.SignUP)
-	e.POST("/login", controllers.LogIn)
-	e.GET("/user/:id", controllers.GetUser)
-	e.POST("/user/:id", controllers.ChangeInfo)
+	e.POST("/user", controller.SignUP)
+	e.GET("/user/token", controller.LogIn)
+	e.GET("/user/:id", controller.GetUser)
+	e.POST("/user/:id", controller.ChangeInfo)
 
-	e.GET("/user/all", controllers.GetAllUser)
-	e.DELETE("/user/:id", controllers.DeleteUser)
+	e.GET("/user/all", controller.GetAllUser)
+	e.DELETE("/user/:id", controller.DeleteUser)
 
 	// Restricted group
-	r := e.Group("/test")
+	//r := e.Group("/user")
+	//// Configure middleware with the custom claims type
+	//r.Use(middleware.JWTWithConfig(utils.Config))
+	//r.GET("/t", utils.Restricted)
 
-	// Configure middleware with the custom claims type
-	r.Use(middleware.JWTWithConfig(utils.Config))
-	r.GET("/t", utils.Restricted)
 	e.Start(":8080")
+
 }
