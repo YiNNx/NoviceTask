@@ -179,32 +179,27 @@
 
   ```
   {
-  	"success": true,
-  	"msg": "",
-  	"data": {[
-  		{
-              "id":xx
-              "email":"xxxx",
-              "username":"xxxx",
-              "createTime": "",
+      "success": true,
+      "msg": "data query succeeded",
+      "data": [
+          {
+              "id": 1,
+              "email": "366333@test",
+              "username": "12333",
+              "pwd": "xxxxxxx",
+              "createTime": "xxxxxx",
               "role": false
-  		},
-  		{
-              "id":xx
-              "email":"xxxx",
-              "username":"xxxx",
-              "createTime": "",
+          },
+  		......
+          {
+              "id": 11,
+              "email": "666666@test.com",
+              "username": "3333",
+              "pwd": "xxxxxxxxx",
+              "createTime": "2022-04-02T23:19:05.739542+08:00",
               "role": false
-  		},
-  		{
-              "id":xx
-              "email":"xxxx",
-              "username":"xxxx",
-              "createTime": "",
-              "role": false
-  		},
-      ], "total": n
-  	}
+          }
+      ]
   }
   ```
 
@@ -219,8 +214,8 @@
   ```
   {
   	"success": true,
-  	"msg": "",
-  	"data": {}
+  	"msg": "deleted successfully",
+  	"data": null
   }
   ```
 
@@ -250,7 +245,7 @@
 >
 >   （暂时想到的是把数据都存在token里传给server 验证成功就存到数据库
 >
->   要去找ryao问一下）
+>   要去问一下）
 
 ## 数据库
 

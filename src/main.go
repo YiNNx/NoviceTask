@@ -11,6 +11,7 @@ func main() {
 	defer models.Close()
 
 	e := echo.New()
+	e.Debug = true
 	e.POST("/signup", controllers.SignUP)
 	e.POST("/login", controllers.LogIn)
 	e.GET("/user/:id", controllers.GetUser)

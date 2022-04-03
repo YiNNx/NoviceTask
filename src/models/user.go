@@ -34,11 +34,11 @@ func (u *User) Insert() error {
 }
 
 // Update user data
-func (u *User) Update(id int) error {
+func (u *User) Update(id int) (*User, error) {
 	user := &User{Id: id}
 	err := db.Model(user).WherePK().Select()
 	if err != nil {
-		return err
+		return nil, err
 	}
 	if len(u.Email) != 0 {
 		user.Email = u.Email
@@ -51,18 +51,9 @@ func (u *User) Update(id int) error {
 	}
 	_, err = db.Model(user).WherePK().Update()
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return nil
-}
-
-// Delete user data
-func (u *User) Delete() error {
-	_, err := db.Model(u).WherePK().Delete()
-	if err != nil {
-		return err
-	}
-	return nil
+	return user, nil
 }
 
 // CheckUser checks email & password_hash
@@ -92,13 +83,23 @@ func GetUser(id int) (*User, error) {
 }
 
 // SelectAllUser returns all users' info
-func SelectAllUser() []User {
+func SelectAllUser() ([]User, error) {
 	var users []User
 	err := db.Model(&users).Select()
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
-	return users
+	return users, nil
+}
+
+// DeleteUser user data
+func DeleteUser(id int) error {
+	u := &User{Id: id}
+	_, err := db.Model(u).WherePK().Delete()
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // Connect database
