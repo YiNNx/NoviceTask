@@ -34,20 +34,21 @@ func (u *User) Insert() error {
 
 // Update user's email/username/pwd by id
 func Update(id int, email string, username string, pwdHash string) error {
+	u := new(User)
 	if email != "" {
-		_, err := db.Model(User{}).Set("email = ?", email).Where("id = ?", id).Update()
+		_, err := db.Model(u).Set("email = ?", email).Where("id = ?", id).Update()
 		if err != nil {
 			return err
 		}
 	}
 	if username != "" {
-		_, err := db.Model(User{}).Set("username = ?", username).Where("id = ?", id).Update()
+		_, err := db.Model(u).Set("username = ?", username).Where("id = ?", id).Update()
 		if err != nil {
 			return err
 		}
 	}
 	if pwdHash != "" {
-		_, err := db.Model(User{}).Set("pwdHash = ?", pwdHash).Where("id = ?", id).Update()
+		_, err := db.Model(u).Set("pwd_hash = ?", pwdHash).Where("id = ?", id).Update()
 		if err != nil {
 			return err
 		}

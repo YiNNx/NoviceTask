@@ -2,15 +2,19 @@ package router
 
 import (
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	"src/controller"
+	"src/utils"
 )
 
-func Router(e *echo.Echo) {
-	e.POST("/user", controller.SignUP)
-	e.GET("/user/token", controller.LogIn)
-	e.GET("/user/:id", controller.GetUser)
-	e.POST("/user/:id", controller.ChangeInfo)
+func CreateRouters(e *echo.Echo) {
+	g := e.Group("/user")
+	g.POST("", controller.SignUP)
+	g.GET("/token", controller.LogIn)
 
-	e.GET("/user/all", controller.GetAllUser)
-	e.DELETE("/user/:id", controller.DeleteUser)
+	g.GET("/:id", controller.GetUser, middleware.JWTWithConfig(utils.Conf))
+	g.POST("/:id", controller.ChangeInfo, middleware.JWTWithConfig(utils.Conf))
+
+	g.GET("/all", controller.GetAllUser, middleware.JWTWithConfig(utils.Conf))
+	g.DELETE("/:id", controller.DeleteUser, middleware.JWTWithConfig(utils.Conf))
 }

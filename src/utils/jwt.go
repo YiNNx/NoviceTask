@@ -1,24 +1,21 @@
 package utils
 
 import (
+	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4/middleware"
-	"net/http"
+	"src/config"
 	"time"
-
-	jwt "github.com/dgrijalva/jwt-go"
-	"github.com/labstack/echo/v4"
 )
 
-// jwtCustomClaims are custom claims extending default ones.
 type jwtUserClaims struct {
 	Id   int  `json:"id"`
 	Role bool `json:"role"`
 	jwt.StandardClaims
 }
 
-var Config = middleware.JWTConfig{
+var Conf = middleware.JWTConfig{
 	Claims:     &jwtUserClaims{},
-	SigningKey: []byte("secret"),
+	SigningKey: []byte(config.JwtSecret),
 }
 
 func GenerateToken(id int, role bool) string {
@@ -34,16 +31,10 @@ func GenerateToken(id int, role bool) string {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
 	// Generate encoded token and send it as response.
-	t, err := token.SignedString([]byte("secret"))
+	t, err := token.SignedString([]byte(config.JwtSecret))
 	if err != nil {
-		return ""
+		return "error"
 	}
-	return t
-}
 
-func Restricted(c echo.Context) error {
-	user := c.Get("id").(*jwt.Token)
-	claims := user.Claims.(*jwtUserClaims)
-	name := claims.Id
-	return c.String(http.StatusOK, "Welcome "+string(name)+"!")
+	return t
 }
