@@ -24,7 +24,6 @@ func (u *User) String() string {
 	return fmt.Sprintf("User<%v %v %v %v %v>", u.Id, u.Email, u.Username, u.CreateTime, u.Role)
 }
 
-// Insert user data
 func (u *User) Insert() error {
 	_, err := db.Model(u).Insert()
 	if err != nil {
@@ -33,7 +32,7 @@ func (u *User) Insert() error {
 	return nil
 }
 
-// Update user data
+// Update user's email/username/pwd by id
 func Update(id int, email string, username string, pwdHash string) error {
 	if email != "" {
 		_, err := db.Model(User{}).Set("email = ?", email).Where("id = ?", id).Update()
@@ -56,7 +55,7 @@ func Update(id int, email string, username string, pwdHash string) error {
 	return nil
 }
 
-// CheckUser checks email & password_hash
+// Check user's email & password
 func CheckUser(email string, pwdHash string) (*User, error) {
 	u := new(User)
 	err := db.Model(u).
@@ -92,7 +91,6 @@ func SelectAllUser() ([]User, error) {
 	return users, nil
 }
 
-// DeleteUser user data
 func DeleteUser(id int) error {
 	u := &User{Id: id}
 	_, err := db.Model(u).WherePK().Delete()
@@ -128,7 +126,6 @@ func CreateSchema() error {
 	models := []interface{}{
 		(*User)(nil),
 	}
-
 	for _, model := range models {
 		err := db.Model(model).CreateTable(&orm.CreateTableOptions{
 			Temp: false,
