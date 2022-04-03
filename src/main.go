@@ -27,6 +27,6 @@ func main() {
 
 	// Configure middleware with the custom claims type
 	r.Use(middleware.JWTWithConfig(utils.Config))
-	r.GET("/teeest", utils.Restricted)
+	r.GET("/t", utils.Restricted)
 	e.Start(":8080")
 }
