@@ -1,10 +1,10 @@
 package model
 
 import (
-	"fmt"
 	"github.com/go-pg/pg/v10"
 	"github.com/go-pg/pg/v10/orm"
 	"src/config"
+	"src/utils"
 	"time"
 )
 
@@ -20,10 +20,6 @@ type User struct {
 	Role       bool      `json:"role" pg:",use_zero"` //0:default 1:admin
 }
 
-func (u *User) String() string {
-	return fmt.Sprintf("User<%v %v %v %v %v>", u.Id, u.Email, u.Username, u.CreateTime, u.Role)
-}
-
 func (u *User) Insert() error {
 	_, err := db.Model(u).Insert()
 	if err != nil {
@@ -35,39 +31,27 @@ func (u *User) Insert() error {
 // Update user's email/username/pwd by id
 func Update(id int, email string, username string, pwdHash string) error {
 	u := new(User)
-	if email != "" {
-		_, err := db.Model(u).Set("email = ?", email).Where("id = ?", id).Update()
-		if err != nil {
-			return err
-		}
-	}
-	if username != "" {
-		_, err := db.Model(u).Set("username = ?", username).Where("id = ?", id).Update()
-		if err != nil {
-			return err
-		}
-	}
-	if pwdHash != "" {
-		_, err := db.Model(u).Set("pwd_hash = ?", pwdHash).Where("id = ?", id).Update()
-		if err != nil {
-			return err
-		}
+	_, err := db.Model(u).
+		Set("email = ?", email).
+		Set("username = ?", username).
+		Set("pwd_hash = ?", pwdHash).
+		Where("id = ?", id).
+		Update()
+	if err != nil {
+		return err
 	}
 	return nil
 }
 
 // Check user's email & password
-func CheckUser(email string, pwdHash string) (*User, error) {
+func CheckUser(email string, pwd string) (*User, error) {
 	u := new(User)
-	err := db.Model(u).
-		Where("email = ?", email).
-		Where("pwd_hash = ?", pwdHash).
-		Select()
-	if err != nil {
+	if err := db.Model(u).Where("email = ?", email).Select(); err != nil {
 		return nil, err
 	}
-	if u == nil {
-		return nil, nil
+	err := utils.ValidatePwd(pwd, u.PwdHash)
+	if err != nil {
+		return nil, err
 	}
 	return u, nil
 }
@@ -95,6 +79,15 @@ func SelectAllUser() ([]User, error) {
 func DeleteUser(id int) error {
 	u := &User{Id: id}
 	_, err := db.Model(u).WherePK().Delete()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func Check(id int) error {
+	u := &User{Id: id}
+	err := db.Model(u).WherePK().Select()
 	if err != nil {
 		return err
 	}

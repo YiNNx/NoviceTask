@@ -1,17 +1,19 @@
 package controller
 
 import (
+	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"net/http"
-	model "src/model"
+	"src/model"
 	"src/utils"
 	"strconv"
+	"time"
 )
 
 type receiveSignUp struct {
-	Email    string `json:"email"`
-	Username string `json:"username"`
-	Pwd      string `json:"pwd"`
+	Email    string `json:"email" validate:"required,email"`
+	Username string `json:"username" validate:"required,max=20,min=4"`
+	Pwd      string `json:"pwd" validate:"required,max=20,min=6"`
 }
 
 type responseToken struct {
@@ -23,14 +25,23 @@ func SignUP(c echo.Context) error {
 	if err := c.Bind(receive); err != nil {
 		return utils.ErrorResponse(c, http.StatusBadRequest, err.Error())
 	}
-	pwdHash := utils.PwdHash(receive.Pwd)
+
+	validate := validator.New()
+	if err := validate.Struct(receive); err != nil {
+		return utils.ErrorResponse(c, http.StatusBadRequest, err.Error())
+	}
+
+	pwdHash, err := utils.PwdHash(receive.Pwd)
+	if err != nil {
+		return utils.ErrorResponse(c, http.StatusInternalServerError, err.Error())
+	}
 	u := &model.User{
 		Email:    receive.Email,
 		Username: receive.Username,
-		PwdHash:  pwdHash,
+		PwdHash:  string(pwdHash),
 	}
 	if err := u.Insert(); err != nil {
-		return utils.ErrorResponse(c, http.StatusUnauthorized, err.Error())
+		return utils.ErrorResponse(c, http.StatusBadRequest, err.Error())
 	}
 	response := &responseToken{
 		Token: utils.GenerateToken(u.Id, u.Role),
@@ -41,12 +52,8 @@ func SignUP(c echo.Context) error {
 func LogIn(c echo.Context) error {
 	email := c.QueryParam("email")
 	pwd := c.QueryParam("pwd")
-	pwdHash := utils.PwdHash(pwd)
-	u, err := model.CheckUser(email, pwdHash)
+	u, err := model.CheckUser(email, pwd)
 	if err != nil {
-		return utils.ErrorResponse(c, http.StatusBadRequest, err.Error())
-	}
-	if u == nil {
 		return utils.ErrorResponse(c, http.StatusUnauthorized, err.Error())
 	}
 	response := &responseToken{
@@ -76,9 +83,9 @@ func GetUser(c echo.Context) error {
 }
 
 type receiveChangeInfo struct {
-	Email    string `json:"email"`
-	Username string `json:"username"`
-	Pwd      string `json:"pwd"`
+	Email    string `json:"email" validate:"required,email"`
+	Username string `json:"username" validate:"required,max=20,min=6"`
+	Pwd      string `json:"pwd" validate:"required,max=20,min=6"`
 }
 
 func ChangeInfo(c echo.Context) error {
@@ -87,16 +94,35 @@ func ChangeInfo(c echo.Context) error {
 	if err := c.Bind(info); err != nil {
 		return utils.ErrorResponse(c, http.StatusBadRequest, err.Error())
 	}
-	err := model.Update(
+
+	validate := validator.New()
+	if err := validate.Struct(info); err != nil {
+		return utils.ErrorResponse(c, http.StatusBadRequest, err.Error())
+	}
+
+	pwdHash, err := utils.PwdHash(info.Pwd)
+	if err != nil {
+		return utils.ErrorResponse(c, http.StatusInternalServerError, err.Error())
+	}
+
+	err = model.Update(
 		id,
 		info.Email,
 		info.Username,
-		utils.PwdHash(info.Pwd),
+		string(pwdHash),
 	)
 	if err != nil {
-		return utils.ErrorResponse(c, http.StatusUnauthorized, err.Error())
+		return utils.ErrorResponse(c, http.StatusInternalServerError, err.Error())
 	}
 	return utils.SuccessRespond(c, http.StatusOK, nil)
+}
+
+type responseAllUser struct {
+	Id         int       `json:"id"`
+	Email      string    `json:"email"`
+	Username   string    `json:"username"`
+	CreateTime time.Time `json:"createTime"`
+	Role       bool      `json:"role"`
 }
 
 func GetAllUser(c echo.Context) error {
@@ -104,14 +130,27 @@ func GetAllUser(c echo.Context) error {
 	if err != nil {
 		return utils.ErrorResponse(c, http.StatusInternalServerError, err.Error())
 	}
-	return utils.SuccessRespond(c, http.StatusOK, users)
+	usersInfo := make([]responseAllUser, len(users))
+	for _, u := range users {
+		usersInfo = append(usersInfo, responseAllUser{
+			Id:         u.Id,
+			Email:      u.Email,
+			Username:   u.Username,
+			CreateTime: u.CreateTime,
+			Role:       u.Role,
+		})
+	}
+	return utils.SuccessRespond(c, http.StatusOK, usersInfo)
 }
 
 func DeleteUser(c echo.Context) error {
 	id, _ := strconv.Atoi(c.Param("id"))
+	if err := model.Check(id); err != nil {
+		return utils.ErrorResponse(c, http.StatusBadRequest, err.Error())
+	}
 	err := model.DeleteUser(id)
 	if err != nil {
-		return utils.ErrorResponse(c, http.StatusUnauthorized, err.Error())
+		return utils.ErrorResponse(c, http.StatusInternalServerError, err.Error())
 	}
 	return utils.SuccessRespond(c, http.StatusOK, nil)
 }

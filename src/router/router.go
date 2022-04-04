@@ -12,9 +12,9 @@ func CreateRouters(e *echo.Echo) {
 	g.POST("", controller.SignUP)
 	g.GET("/token", controller.LogIn)
 
-	g.GET("/:id", controller.GetUser, middleware.JWTWithConfig(utils.Conf))
-	g.POST("/:id", controller.ChangeInfo, middleware.JWTWithConfig(utils.Conf))
+	g.GET("/:id", controller.GetUser, middleware.JWTWithConfig(utils.Conf), utils.VerifyUser)
+	g.PUT("/:id", controller.ChangeInfo, middleware.JWTWithConfig(utils.Conf), utils.VerifyUser)
 
-	g.GET("/all", controller.GetAllUser, middleware.JWTWithConfig(utils.Conf))
-	g.DELETE("/:id", controller.DeleteUser, middleware.JWTWithConfig(utils.Conf))
+	g.GET("/all", controller.GetAllUser, middleware.JWTWithConfig(utils.Conf), utils.VerifyAdmin)
+	g.DELETE("/:id", controller.DeleteUser, middleware.JWTWithConfig(utils.Conf), utils.VerifyAdmin)
 }

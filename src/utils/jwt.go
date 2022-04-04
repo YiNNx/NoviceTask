@@ -7,19 +7,19 @@ import (
 	"time"
 )
 
-type jwtUserClaims struct {
+type JwtUserClaims struct {
 	Id   int  `json:"id"`
 	Role bool `json:"role"`
 	jwt.StandardClaims
 }
 
 var Conf = middleware.JWTConfig{
-	Claims:     &jwtUserClaims{},
+	Claims:     &JwtUserClaims{},
 	SigningKey: []byte(config.JwtSecret),
 }
 
 func GenerateToken(id int, role bool) string {
-	claims := &jwtUserClaims{
+	claims := &JwtUserClaims{
 		id,
 		role,
 		jwt.StandardClaims{
