@@ -28,7 +28,7 @@
   }
   ```
 
-- `GET /token?email=xxxxx&pwd=xxxxx`
+- `GET /user/token?email=xxxxx&pwd=xxxxx`
 
   用户登录
 

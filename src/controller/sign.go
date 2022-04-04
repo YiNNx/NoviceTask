@@ -131,14 +131,12 @@ func GetAllUser(c echo.Context) error {
 		return utils.ErrorResponse(c, http.StatusInternalServerError, err.Error())
 	}
 	usersInfo := make([]responseAllUser, len(users))
-	for _, u := range users {
-		usersInfo = append(usersInfo, responseAllUser{
-			Id:         u.Id,
-			Email:      u.Email,
-			Username:   u.Username,
-			CreateTime: u.CreateTime,
-			Role:       u.Role,
-		})
+	for i, _ := range users {
+		usersInfo[i].Id = users[i].Id
+		usersInfo[i].Email = users[i].Email
+		usersInfo[i].Username = users[i].Username
+		usersInfo[i].CreateTime = users[i].CreateTime
+		usersInfo[i].Role = users[i].Role
 	}
 	return utils.SuccessRespond(c, http.StatusOK, usersInfo)
 }
