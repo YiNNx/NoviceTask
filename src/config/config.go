@@ -1,8 +1,8 @@
 package config
 
-var JwtSecret string = "2333333"
+var JwtSecret = "2333333"
 
-//PostgreSQL连接参数
+//Postgresql
 const (
 	User     = "postgres"
 	Password = "080502"

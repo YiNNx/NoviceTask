@@ -10,6 +10,8 @@ import (
 	"time"
 )
 
+var validate = validator.New()
+
 type receiveSignUp struct {
 	Email    string `json:"email" validate:"required,email"`
 	Username string `json:"username" validate:"required,max=20,min=4"`
@@ -26,7 +28,6 @@ func SignUP(c echo.Context) error {
 		return utils.ErrorResponse(c, http.StatusBadRequest, err.Error())
 	}
 
-	validate := validator.New()
 	if err := validate.Struct(receive); err != nil {
 		return utils.ErrorResponse(c, http.StatusBadRequest, err.Error())
 	}
@@ -95,7 +96,6 @@ func ChangeInfo(c echo.Context) error {
 		return utils.ErrorResponse(c, http.StatusBadRequest, err.Error())
 	}
 
-	validate := validator.New()
 	if err := validate.Struct(info); err != nil {
 		return utils.ErrorResponse(c, http.StatusBadRequest, err.Error())
 	}
@@ -131,7 +131,7 @@ func GetAllUser(c echo.Context) error {
 		return utils.ErrorResponse(c, http.StatusInternalServerError, err.Error())
 	}
 	usersInfo := make([]responseAllUser, len(users))
-	for i, _ := range users {
+	for i := range users {
 		usersInfo[i].Id = users[i].Id
 		usersInfo[i].Email = users[i].Email
 		usersInfo[i].Username = users[i].Username
