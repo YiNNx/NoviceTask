@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"src/config"
 	"src/model"
 	"src/router"
 )
@@ -17,5 +18,5 @@ func main() {
 
 	router.CreateRouters(e)
 
-	e.Logger.Fatal(e.Start(":8080"))
+	e.Logger.Fatal(e.Start(config.C.App.Addr))
 }

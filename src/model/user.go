@@ -97,9 +97,9 @@ func Check(id int) error {
 // Connect database
 func Connect() *pg.DB {
 	db = pg.Connect(&pg.Options{
-		User:     config.User,
-		Password: config.Password,
-		Database: config.Dbname,
+		User:     config.C.Postgresql.User,
+		Password: config.C.Postgresql.Password,
+		Database: config.C.Postgresql.Dbname,
 	})
 
 	var n int

@@ -1,7 +1,8 @@
 /.idea
 
 TaskList.md
+Script.md
 
 go.sum
 
-src/test.go
+env/config/default.yml

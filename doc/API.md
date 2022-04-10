@@ -8,9 +8,9 @@
 
   ```
   {
-  	"email": "xxxx",
-  	"username": "xxxx",
-  	"pwd": "xxxxxxxx"
+      "email": "xxxx",
+      "username": "xxxx",
+      "pwd": "xxxxxxxx"
   }
   ```
 
@@ -20,29 +20,31 @@
 
   ```
   {
-  	"success": true,
-  	"msg": "",
-  	"data": {
-  		"token":"xxxxxxxxxxxx"
-  	}
+      "success": true,
+      "msg": "",
+      "data": {
+        "id": 23
+          "token":"xxxxxxxxxxxx"
+      }
   }
   ```
 
-- `GET /user/token?email=xxxxx&pwd=xxxxx`
+  - `GET /user/token?email=xxxxx&pwd=xxxxx`
 
-  用户登录
+    用户登录
 
-  返回：
+    返回：
 
-  ```
-  {
-  	"success": true,
-  	"msg": "",
-  	"data": {
-  		"token":"xxxxxxxxxxx"
-  	}
-  }
-  ```
+    ```
+    {
+        "success": true,
+        "msg": "",
+        "data": {
+            "id": 23
+            "token":"xxxxxxxxxxx"
+        }
+    }
+    ```
 
 #### 需登录权限的api
 

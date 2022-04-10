@@ -19,6 +19,7 @@ type receiveSignUp struct {
 }
 
 type responseToken struct {
+	Id    int    `json:"id"`
 	Token string `json:"token"`
 }
 
@@ -45,6 +46,7 @@ func SignUP(c echo.Context) error {
 		return utils.ErrorResponse(c, http.StatusBadRequest, err.Error())
 	}
 	response := &responseToken{
+		Id:    u.Id,
 		Token: utils.GenerateToken(u.Id, u.Role),
 	}
 	return utils.SuccessRespond(c, http.StatusOK, response)
@@ -58,6 +60,7 @@ func LogIn(c echo.Context) error {
 		return utils.ErrorResponse(c, http.StatusUnauthorized, err.Error())
 	}
 	response := &responseToken{
+		Id:    u.Id,
 		Token: utils.GenerateToken(u.Id, u.Role),
 	}
 	return utils.SuccessRespond(c, http.StatusOK, response)
@@ -142,11 +145,14 @@ func GetAllUser(c echo.Context) error {
 }
 
 func DeleteUser(c echo.Context) error {
-	id, _ := strconv.Atoi(c.Param("id"))
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return utils.ErrorResponse(c, http.StatusBadRequest, err.Error())
+	}
 	if err := model.Check(id); err != nil {
 		return utils.ErrorResponse(c, http.StatusBadRequest, err.Error())
 	}
-	err := model.DeleteUser(id)
+	err = model.DeleteUser(id)
 	if err != nil {
 		return utils.ErrorResponse(c, http.StatusInternalServerError, err.Error())
 	}
